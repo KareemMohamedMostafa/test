@@ -1,0 +1,155 @@
+@extends('layouts.app')
+
+@section('content')
+
+<section class="content">
+
+  <div class="block-header">
+
+    <div class="row">
+
+      <div class="col-lg-3 col-md-6 col-sm-12">
+
+        <h2>All Appointments <small class="text-muted">Listing</small> </h2>
+
+      </div>
+
+      <div class="col-lg-5 col-md-6 col-sm-12">
+
+        <a href="{{ url('appointments/0') }}"><button type="button" class="btn btn-default btn-round hidden-sm-down float-right m-l-10"> Beginning </button> </a>
+
+        <a href="{{ url('appointments/365') }}"><button type="button" class="btn btn-info btn-round hidden-sm-down float-right m-l-10"> 365 </i> </button> </a>
+
+        <a href="{{ url('appointments/30') }}"><button type="button" class="btn btn-info btn-round hidden-sm-down float-right m-l-10"> 30 </i> </button> </a>
+
+        <a href="{{ url('appointments/7') }}"><button type="button" class="btn btn-success btn-round hidden-sm-down float-right m-l-10"> 7 </i> </button> </a>
+
+        <a href="{{ url('appointments/1') }}"><button type="button" class="btn btn-info btn-round hidden-sm-down float-right m-l-10"> Today </button> </a>
+
+      </div>
+
+      <div class="col-lg-4 col-md-6 col-sm-12">
+
+        @if (Auth::user()->role != 'visitor')
+
+        <button class="btn btn-primary btn-icon btn-round hidden-sm-down float-right m-l-10" type="button" data-toggle="modal" data-target="#formAppointmentModal" onclick="resetForm('appointmentForm')"> <i class="zmdi zmdi-plus"></i> </button>
+
+        @endif
+
+        <ul class="breadcrumb float-md-right">
+
+          <li class="breadcrumb-item"><a href="{{ url('/') }}"><i class="zmdi zmdi-home"></i> Home</a></li>
+
+          <li class="breadcrumb-item"><a href="javascript:void(0);">Appointments</a></li>
+
+          <li class="breadcrumb-item active">All</li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="container-fluid">
+
+    <div class="row clearfix">
+
+      <div class="col-md-12">
+
+        <div class="card patients-list">
+
+          <div class="body">
+
+            @if (count($results) > 0)
+
+            <div class="table-responsive">
+
+              <table class="table m-b-0 table-hover js-basic-example dataTable">
+
+                <thead>
+
+                  <tr>
+
+                    <th>ID</th>
+
+                    <th>Room</th>
+
+                    <th>Doctor</th>
+
+                    <th class="text-center">Start Time</th>
+
+                    <th class="text-center">Finish Time</th>
+
+                    <th>Patient</th>
+
+                    <th>Subject</th>
+
+                    <th class="text-center">Status</th>
+
+                    @if (Auth::user()->role == 'admin')
+
+                    <th class="text-center">Actions</th>
+
+                    @endif
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  @foreach($results as $result)
+
+                  <tr>
+
+                    <td>{{ $result->id }}</td>
+
+                    <td>{{ $result->room->name }}</td>
+
+                    <td><span class="list-icon"><img class="patients-img" src="{{ url('/getImage/' . $result->doctor->image) }}" /></span> {{ $result->doctor->fullname }}</td>
+
+                    <td class="text-center">{{ \FormatTime::MediumTimeFilter($result->start) }}</td>
+
+                    <td class="text-center">{{ \FormatTime::MediumTimeFilter($result->finish) }}</td>
+
+                    <td><span class="list-icon"><img class="patients-img" src="{{ url('/getImage/' . $result->patient->image) }}" /></span> {{ $result->patient->fullname }}</td>
+
+                    <td>{{ $result->subject }}</td>
+
+                    <td class="text-center"><span class="badge badge-success">{{ $result->status }}</span></td>
+
+                    @if (Auth::user()->role == 'admin')
+
+                    <td class="text-center"> <button type="button" class="btn btn-default btn-icon btn-simple btn-icon-mini btn-round" data-toggle="modal" data-target="#formAppointmentModal" onclick="formAppointmentModal('{{ $result->id }}')"><i class="zmdi zmdi-edit"></i></button> </td>
+
+                    @endif
+
+                  </tr>
+
+                  @endforeach
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+            @else <div class="alert alert-info">Empty data</div> @endif
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+@include('appointment.form')
+
+@endsection
